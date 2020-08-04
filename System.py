@@ -21,10 +21,10 @@ def clear():
     Display.insert(0, 'Cleared...')
 
 # Other Funcs
-meal_dict = {'Fried Rice':1000, 'Fried Rice $ Chicken':1500, 'Sharwama':800, 'Cheese Burger':500, 'Pepper Chicken':500}
-drink_dict = {'Cola':350, 'Limo':350, 'Apfel Schorle':300, 'Wein':550, 'Bier':400}
-room_dict = {'normal':5000.0, 'vip':15000.0}
-dev_cost = 600.0
+meal_dict = {'Fried Rice':5.0, 'Fried Rice & Chicken':8.5, 'Durum':3.5, 'Cheese Burger':4.0, 'Pepper Chicken':3.5}
+drink_dict = {'Cola':2.0, 'Limo':1.5, 'Apfel Schorle':1.5, 'Wein':3.0, 'Bier':0.95}
+room_dict = {'normal':25.0, 'vip':60.0}
+dev_cost = 3.0
 
 def total_result():
     # Meals
@@ -78,11 +78,11 @@ def total_result():
     service_cost.set(round((temp_s * 0.015), 2))
 
     # Total Charge
-    temp_t = temp_s + float(txtService.get())
+    temp_t = round(temp_s + float(txtService.get()), 2)
     total_cost.set(temp_t)
 
     # Main Screen
-    temp_bigscreen = 'Grand Total: $'+ str(temp_t)
+    temp_bigscreen = 'Grand Total: €'+ str(temp_t)
     Display.delete(0, END)
     Display.insert(0, temp_bigscreen)
     if temp_t == 0:
@@ -92,8 +92,23 @@ def total_result():
 #currency coverter
 def currency_coverter():
     base_url = os.environ['MY_CURRENCY_API']
-    currency_dict = {'Yuan': 'CNY', 'Euro': 'EUR', 'Cedi':'GHS', 'Naira': 'NGN', 'Canadian Dollar': 'CAD', 'British Pounds': 'GBP'}
-    pass
+    currency_dict = {'Yuan': 'CNY', 'US Dollar': 'USD', 'Cedi':'GHS', 'Naira': 'NGN', 'Canadian Dollar': 'CAD', 'British Pounds': 'GBP'}
+    response = requests.get(base_url)
+    data = response.json()
+
+    # fecht currency and amount
+    amt = txtAmount.get()
+    curr = txtCountry.get()
+    curr_ = currency_dict.get(curr)
+
+    if data['success'] is True:
+        val = round(float(amt) * data['rates'].get(curr_), 2)
+        temp = curr + ': ' + str(val)
+        Display.delete(0, END)
+        Display.insert(0, temp)
+    else:
+        Display.delete(0, END)
+        Display.insert(0, 'Please connect to the Internet....')
 
 
 root = Tk(className='Hotel Management System')
@@ -159,7 +174,7 @@ meal_desc = StringVar(value='Available Delicacies')
 
 meal_label = Label(f1, font=('arial', 16, 'bold'), text='Choose Meal', bd=10, anchor=W).grid(row=0, column=0)
 meal_selector = ttk.Combobox(f1, font=('arial', 16, 'bold'), textvariable=meal_desc)
-meal_selector['values'] = ('Fried Rice', 'Fried Rice $ Chicken', 'Sharwama', 'Cheese Burger', 'Pepper Chicken')
+meal_selector['values'] = ('Fried Rice', 'Fried Rice & Chicken', 'Durum', 'Cheese Burger', 'Pepper Chicken')
 meal_selector.grid(row=0, column=1)
 
 meal_qty_label = Label(f1, font=('arial', 16, 'bold'), text='Qty of Meal', bd=10, anchor=W).grid(row=1, column=0)
@@ -198,44 +213,44 @@ no_rad = Radiobutton(f1, font=('arial', 16, 'bold'), text='No', variable=radio1,
 
 # Cost Display
 cost = StringVar()
-lblMeal1 = Label(f1, font=('arial', 16, 'bold'), text='Cost of Meal ($)', bd=16).grid(row=0, column=2)
+lblMeal1 = Label(f1, font=('arial', 16, 'bold'), text='Cost of Meal (€)', bd=16).grid(row=0, column=2)
 txtMeal1 = Entry(f1, font=('arial', 16, 'bold'), textvariable=cost, bd=5, fg='white', bg='blue', insertwidth=4,
                  justify='right')
 txtMeal1.grid(row=0, column=3)
 
 Drinks = StringVar()
-lblDrink1 = Label(f1, font=('arial', 16, 'bold'), text='Cost of Drink ($)', bd=16).grid(row=1, column=2)
+lblDrink1 = Label(f1, font=('arial', 16, 'bold'), text='Cost of Drink (€)', bd=16).grid(row=1, column=2)
 txtDrink1 = Entry(f1, font=('arial', 16, 'bold'), textvariable=Drinks, bd=5, fg='white', bg='blue', insertwidth=4,
                   justify='right')
 txtDrink1.grid(row=1, column=3)
 
 Devcost = StringVar()
-lblDev = Label(f1, font=('arial', 16, 'bold'), text='Delivery Cost($)', bd=16).grid(row=2, column=2)
+lblDev = Label(f1, font=('arial', 16, 'bold'), text='Delivery Cost (€)', bd=16).grid(row=2, column=2)
 txtDev = Entry(f1, font=('arial', 16, 'bold'), textvariable=Devcost, bd=5, fg='white', bg='blue', insertwidth=4,
                justify='right')
 txtDev.grid(row=2, column=3)
 
 Room_cost = StringVar()
-lblRoom = Label(f1, font=('arial', 16, 'bold'), text='Cost of Room($)', bd=16).grid(row=3, column=2)
+lblRoom = Label(f1, font=('arial', 16, 'bold'), text='Cost of Room (€)', bd=16).grid(row=3, column=2)
 txtRoom = Entry(f1, font=('arial', 16, 'bold'), textvariable=Room_cost, bd=5, fg='white', bg='blue', insertwidth=4,
                 justify='right')
 txtRoom.grid(row=3, column=3)
 
 service_cost = StringVar()
-lblService = Label(f1, font=('arial', 16, 'bold'), text='Service Fee($)', bd=16).grid(row=4, column=2)
+lblService = Label(f1, font=('arial', 16, 'bold'), text='Service Fee (€)', bd=16).grid(row=4, column=2)
 txtService = Entry(f1, font=('arial', 16, 'bold'), textvariable=service_cost, bd=5, fg='white', bg='blue',
                    insertwidth=4, justify='right')
 txtService.grid(row=4, column=3)
 
 total_cost = StringVar()
-lblTotal = Label(f1, font=('arial', 16, 'bold'), text='Total Cost($)', bd=16).grid(row=5, column=2)
+lblTotal = Label(f1, font=('arial', 16, 'bold'), text='Total Cost (€)', bd=16).grid(row=5, column=2)
 txtTotal = Entry(f1, font=('arial', 16, 'bold'), textvariable=total_cost, bd=5, fg='white', bg='blue',
                  insertwidth=4, justify='right')
 txtTotal.grid(row=5, column=3)
 
 # Currency Converter
 var1 = IntVar()
-indicator = StringVar(value='Choose a Country')
+indicator = StringVar(value='Choose a Currency')
 
 lblCunCo = Label(f1, font=('arial', 16, 'bold italic'),
                  text='---------------------------------------Currency Converter--------------------------------------',
@@ -244,15 +259,15 @@ lblCunCo.grid(row=6, column=0, columnspan=4)
 
 lblCountry = Label(f1, font=('arial', 16, 'bold'), text='Currency', bd=16, anchor=W).grid(row=7, column=0)
 txtCountry = ttk.Combobox(f1, font=('arial', 16, 'bold'), textvariable=indicator)
-txtCountry['value'] = ('Yuan', 'Euro', 'Cedi', 'Naira', 'Canadian Dollar', 'British Pounds')
+txtCountry['value'] = ('Yuan', 'US Dollar', 'Cedi', 'Naira', 'Canadian Dollar', 'British Pounds')
 txtCountry.grid(row=7, column=1)
 
-lblAmount = Label(f1, font=('arial', 16, 'bold'), text='Amount ($)', bd=16, anchor=W).grid(row=7, column=2)
+lblAmount = Label(f1, font=('arial', 16, 'bold'), text='Amount (€)', bd=16, anchor=W).grid(row=7, column=2)
 txtAmount = Entry(f1, font=('arial', 16, 'bold'), textvariable=var1, bd=5, bg='white', insertwidth=4, justify='right')
 txtAmount.grid(row=7, column=3)
 
 # Control Buttons
-btConvert = Button(f1, padx=52.3, pady=15, bd=8, font=('arial', 16, 'bold'), text='Convert').grid(row=8, column=2)
+btConvert = Button(f1, padx=52.3, pady=15, bd=8, font=('arial', 16, 'bold'), text='Convert', command=currency_coverter).grid(row=8, column=2)
 
 btTotal = Button(f4, padx=53, pady=15, bd=8, font=('arial', 16, 'bold'), text='Total', command=total_result).grid(row=0, column=0)
 btScreen = Button(f4, padx=51, pady=15, bd=8, font=('arial', 16, 'bold'), text='Clear').grid(row=1, column=0)
