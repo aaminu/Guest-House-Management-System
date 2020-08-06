@@ -1,5 +1,5 @@
 from tkinter import *
-import time, os, requests
+import time, os, requests, datetime
 from tkinter import ttk
 
 # Calc Funcs
@@ -19,6 +19,7 @@ def clear():
     operator = ''
     txt_input.set('')
     Display.insert(0, 'Cleared...')
+
 
 # Other Funcs
 meal_dict = {'Fried Rice':5.0, 'Fried Rice & Chicken':8.5, 'Durum':3.5, 'Cheese Burger':4.0, 'Pepper Chicken':3.5}
@@ -99,6 +100,10 @@ def currency_coverter():
     # fecht currency and amount
     amt = txtAmount.get()
     curr = txtCountry.get()
+    if curr == 'Choose a Currency':
+        Display.delete(0, END)
+        Display.insert(0, 'Please choose a Currency')
+
     curr_ = currency_dict.get(curr)
 
     if data['success'] is True:
@@ -110,6 +115,71 @@ def currency_coverter():
         Display.delete(0, END)
         Display.insert(0, 'Please connect to the Internet....')
 
+# Resetting Button
+def rest():
+    clear()
+    Display.delete(0, END)
+    Display.insert(0, 'Hello! Welcome')
+    meal_selector.set(value='Available Delicacies')
+    meal_qty_indicator.delete(0, END)
+    meal_qty_indicator.insert(0,0)
+    drink_selector.set(value='Available Drinks')
+    drink_qty_indicator.delete(0, END)
+    drink_qty_indicator.insert(0, 0)
+    chkb1.set(0)
+    radio1.set(3)
+    txtCountry.set(value='Choose a Currency')
+    cost.set(0.0)
+    Drinks.set(0.0)
+    Devcost.set(0.0)
+    Room_cost.set(0.0)
+    service_cost.set(0.0)
+    total_cost.set(0.0)
+    txtAmount.delete(0, END)
+    txtAmount.insert(0, 0)
+
+def hotel():
+    Display.delete(0, END)
+    Display.insert(0, 'Hotel Management System')
+
+def powered():
+    Display.delete(0, END)
+    Display.insert(0, 'Powered by PYthon...')
+
+def reset():
+    Display.delete(0, END)
+    Display.insert(0, 'System Resetting....')
+    Display.after(2000, hotel)
+    Display.after(4000, powered)
+    Display.after(4000, rest)
+
+
+# Clear Button
+def clear_screen():
+    Display.delete(0, END)
+    cost.set('')
+    Drinks.set('')
+    Devcost.set('')
+    Room_cost.set('')
+    service_cost.set('')
+    total_cost.set('')
+
+# Exit Button
+def stop():
+    root.destroy()
+
+def close_app():
+    Display.delete(0, END)
+    Display.insert(0, 'Clearing Memory...')
+    Display.after(3000, stop)
+
+# Time
+def digital_clock():
+    d = datetime.datetime.now()
+    today = d.strftime('%B %d, %Y')
+    current_time = time.strftime('%H:%M:%S') + ' ' +today
+    lblInfo.config(text=current_time)
+    lblInfo.after(200, digital_clock)
 
 root = Tk(className='Hotel Management System')
 root.geometry('1200x700+0+0')
@@ -143,8 +213,9 @@ Display.grid(columnspan=4)
 
 # Date and Time
 localtime = time.asctime(time.localtime(time.time()))
-lblInfo = Label(f2, font=('arial', 20, 'bold'), text=localtime, fg='dark blue', bd=10, anchor=W)
+lblInfo = Label(f2, font=('arial', 20, 'bold'), fg='dark blue', bd=10, anchor=W)
 lblInfo.grid(row=0, column=0, columnspan=4)
+digital_clock()
 
 # Calculator
 operator = ''
@@ -270,9 +341,9 @@ txtAmount.grid(row=7, column=3)
 btConvert = Button(f1, padx=52.3, pady=15, bd=8, font=('arial', 16, 'bold'), text='Convert', command=currency_coverter).grid(row=8, column=2)
 
 btTotal = Button(f4, padx=53, pady=15, bd=8, font=('arial', 16, 'bold'), text='Total', command=total_result).grid(row=0, column=0)
-btScreen = Button(f4, padx=51, pady=15, bd=8, font=('arial', 16, 'bold'), text='Clear').grid(row=1, column=0)
-btReset = Button(f4, padx=49, pady=15, bd=8, font=('arial', 16, 'bold'), text='Reset').grid(row=2, column=0)
-btExit = Button(f4, padx=56, pady=15, bd=8, font=('arial', 16, 'bold'), text='Exit').grid(row=3, column=0)
+btScreen = Button(f4, padx=51, pady=15, bd=8, font=('arial', 16, 'bold'), text='Clear', command=clear_screen).grid(row=1, column=0)
+btReset = Button(f4, padx=49, pady=15, bd=8, font=('arial', 16, 'bold'), text='Reset', command=reset).grid(row=2, column=0)
+btExit = Button(f4, padx=56, pady=15, bd=8, font=('arial', 16, 'bold'), text='Exit', command=close_app).grid(row=3, column=0)
 
 # Logo
 photo = PhotoImage(file='python.jpg')
